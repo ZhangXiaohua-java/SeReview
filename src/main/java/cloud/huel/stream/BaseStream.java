@@ -169,6 +169,23 @@ public class BaseStream {
 		 * key-> dccc784bd1a24d91b22bb55cc1b01d43 value->tom
 		 * key-> c58451a84b2048a9ae1a528d70d2a212 value->harry
 		 */
+//		或则可以来一些更好玩的,贪婪写法,将value同时保存
+		/***
+		 * 只有第一条结果的value是 , 分隔的,而且明显就是旧值和新值的和
+		 * a ===jack,johnson
+		 * 6703ddb157d44f9c91b61221d4d52c1b ===harry
+		 * 596b1465867f428c87dbcd509764fa89 ===tom
+		 */
+		System.out.println("differ");
+		new Thread(()->{
+			ConcurrentMap<String, String> concurrentMap = userList.stream().collect(Collectors.toConcurrentMap(item -> item.getId(), item -> item.getName(), (oldValue, newValue) -> {
+				 return oldValue+","+newValue;
+			}));
+			for (String key:concurrentMap.keySet()){
+				System.out.println(key+" ==="+concurrentMap.get(key));
+			}
+		}).start();
+
 
 	}
 
