@@ -136,6 +136,41 @@ public class BaseStream {
 		System.out.println("hello java");
 	}
 
+	/**
+	 * 当Map的key重复时,就会抛出异常java.lang.IllegalStateException: Duplicate key jack
+	 * 所以需要对异常进行处理,而不是和向map中添加数据,key相同就用新值替换旧值并返回旧值
+	 * 所以在Collectors.toMap(key,value,(oldValue,newValue)->oldValue || newValue)
+	 * 中需要加一个参数,用来指定当key重复时来使用哪个值
+	 */
+	@Test
+	public void keyException(){
+
+		List<User> userList = new ArrayList<>();
+		userList.add(new User("a","jack"));
+		userList.add(new User(UUIDUtils.getId(),"tom"));
+		userList.add(new User(UUIDUtils.getId(),"harry"));
+		userList.add(new User("a","johnson"));
+		Map<String, String> umap = userList.stream().collect(Collectors.toMap(item -> item.getId(), item -> item.getName(),(oldValue,newValue)->oldValue));
+		umap.forEach((key,value)->{
+			System.out.println(key+"==="+value);
+		});
+
+		new Thread(()->{
+			Map<String, String> map = userList.parallelStream().collect(Collectors.toMap(item -> item.getId(), item -> item.getName(), (oldVal, newVal) -> newVal));
+			map.forEach((key,value)-> System.out.println("key-> "+key+" value->"+value));
+		}).start();
+		/**
+		 * 运行结果
+		 * a===jack 使用旧值
+		 * dccc784bd1a24d91b22bb55cc1b01d43===tom
+		 * c58451a84b2048a9ae1a528d70d2a212===harry
+		 *
+		 * key-> a value->johnson 使用新值
+		 * key-> dccc784bd1a24d91b22bb55cc1b01d43 value->tom
+		 * key-> c58451a84b2048a9ae1a528d70d2a212 value->harry
+		 */
+
+	}
 
 
 }
