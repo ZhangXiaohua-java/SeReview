@@ -2,9 +2,7 @@ package cloud.huel.stream;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -44,6 +42,41 @@ public class StreamArrayOpearation {
 		for (String s : strings) {
 			System.out.println(s);
 		}
+
+	}
+
+	/**
+	 * 串行流
+	 */
+	@Test
+	public void toArray(){
+		Integer[] array = Stream.of(1, 2, 3, 57, 9).toArray(Integer[]::new);
+		System.out.println(Arrays.toString(array));
+		List<String> list = Arrays.asList("a", "b", "c", "d", "e");
+		list.parallelStream().forEach(System.out::println);
+		list.stream().parallel().forEach(s-> System.out.println(s));
+
+	}
+
+
+	/**
+	 * 没看出来啥区别
+	 */
+	@Test
+	public void find(){
+		List<String> list = Arrays.asList("a", "b", "c", "c1", "c2", "d");
+		Optional<String> ele = list.parallelStream().filter(s -> s.startsWith("c")).findFirst();
+		System.out.println(ele.get());
+		Optional<String> ele2 = list.parallelStream().filter(s -> s.startsWith("c")).findAny();
+		System.out.println(ele2.get());
+
+//		串行流
+		Optional<String> s1 = list.stream().filter(s -> s.startsWith("c")).findFirst();
+		System.out.println(s1.get());
+		new Thread(()->{
+			Optional<String> s2 = list.stream().filter(s -> s.startsWith("c")).findAny();
+			System.out.println(s2.get());
+		}).start();
 
 	}
 
