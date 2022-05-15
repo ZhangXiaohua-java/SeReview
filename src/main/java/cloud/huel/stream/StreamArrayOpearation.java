@@ -3,6 +3,8 @@ package cloud.huel.stream;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -77,6 +79,46 @@ public class StreamArrayOpearation {
 			Optional<String> s2 = list.stream().filter(s -> s.startsWith("c")).findAny();
 			System.out.println(s2.get());
 		}).start();
+
+	}
+
+
+	@Test
+	public void stream(){
+		BinaryOperator<Integer> binaryOperator = BinaryOperator.minBy((item,item2)-> item -item2);
+		Integer a = binaryOperator.apply(10, 20);
+		System.out.println(a);
+		BinaryOperator<String> binaryComparator = BinaryOperator.maxBy((s1,s2)->s1.compareTo(s2));
+		String s = binaryComparator.apply("java", "go");
+		System.out.println(s);
+
+	}
+
+	/**
+	 * Consumer接口,只接收一个参数,没有返回值
+	 * andThen接收的参数只能是Consumer接口的实现类对象,通过andThen可以实现链式调用,
+	 * accept就是一个终结操作,accept接收的参数就是这样要处理的数据
+	 */
+	@Test
+	public void andThen(){
+		List<String> stringList = Arrays.asList("a", "b", "c", "d");
+		Consumer<List<String>> consumer = list -> {
+			for (int i = 0; i < list.size(); i++) {
+				list.set(i,list.get(i).toUpperCase(Locale.ROOT));
+			}
+		};
+
+		Consumer<List<String>> consumer2 = list -> {
+			for (String s : list) {
+				System.out.println(s);
+			}
+		};
+		Consumer<List<String>> consumer3 = list -> {
+			for (String s : list) {
+				System.out.println(s.toLowerCase(Locale.ROOT));
+			}
+		};
+		consumer.andThen(consumer2).andThen(consumer3).accept(stringList);
 
 	}
 
